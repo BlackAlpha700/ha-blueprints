@@ -1,0 +1,111 @@
+blueprint:
+  name: Actions for HM-RC-4-3
+  description: When a button is pressed, the defined actions will be executed. Please keep in mind, that long-press actions might be executed multiple times, according to your configured minimum duration for long press. This can be configured in your CCU.
+  domain: automation
+  input:
+    switch:
+        name: HM-RC-4-3 Device
+        description: Please select a HM-RC-4-3 (4 button keychain remote control) entity of your Homematic (not Homematic Cloud) integration by typing in the name of the device which was set in your CCU.
+        
+    action_first_short:
+        name: Action
+        description: First Button (near LED), Short Press
+        default: []
+        selector:
+            action: {}
+    action_first_long:
+        name: Action
+        description: First Button (near LED), Long Press
+        default: []
+        selector:
+            action: {}
+    action_second_short:
+        name: Action
+        description: Second Button (one dot), Short Press
+        default: []
+        selector:
+            action: {}
+    action_second_long:
+        name: Action
+        description: Second Button (one dot), Long Press
+        default: []
+        selector:
+            action: {}
+    action_third_short:
+        name: Action
+        description: Third Button (two dots), Short Press
+        default: []
+        selector:
+            action: {}
+    action_third_long:
+        name: Action
+        description: Third Button (two dots), Long Press
+        default: []
+        selector:
+            action: {}
+    action_fourth_short:
+        name: Action
+        description: Fourth Button (near keyring), Short Press
+        default: []
+        selector:
+            action: {}
+    action_fourth_long:
+        name: Action
+        description: Fourth Button (near keyring), Long Press
+        default: []
+        selector:
+            action: {}
+
+trigger:
+  - platform: event
+    event_type: homematic.keypress
+    event_data:
+      name: !input 'switch'
+      
+condition: []
+    
+action:
+  - choose:
+      - conditions:
+          - condition: template
+            value_template: >-
+              {{ trigger.event.data.channel == 1 and trigger.event.data.param == 'press_short' }}
+        sequence: !input 'action_second_short'
+      - conditions:
+          - condition: template
+            value_template: >-
+              {{ trigger.event.data.channel == 1 and trigger.event.data.param == 'press_long' }}
+        sequence: !input 'action_second_long'
+      - conditions:
+          - condition: template
+            value_template: >-
+              {{ trigger.event.data.channel == 2 and trigger.event.data.param == 'press_short' }}
+        sequence: !input 'action_first_short'
+      - conditions:
+          - condition: template
+            value_template: >-
+              {{ trigger.event.data.channel == 2 and trigger.event.data.param == 'press_long' }}
+        sequence: !input 'action_first_long'
+      - conditions:
+          - condition: template
+            value_template: >-
+              {{ trigger.event.data.channel == 3 and trigger.event.data.param == 'press_short' }}
+        sequence: !input 'action_fourth_short'
+      - conditions:
+          - condition: template
+            value_template: >-
+              {{ trigger.event.data.channel == 3 and trigger.event.data.param == 'press_long' }}
+        sequence: !input 'action_fourth_long'
+      - conditions:
+          - condition: template
+            value_template: >-
+              {{ trigger.event.data.channel == 4 and trigger.event.data.param == 'press_short' }}
+        sequence: !input 'action_third_short'
+      - conditions:
+          - condition: template
+            value_template: >-
+              {{ trigger.event.data.channel == 4 and trigger.event.data.param == 'press_long' }}
+        sequence: !input 'action_third_long'
+
+mode: parallel
+max: 10
